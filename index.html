@@ -525,40 +525,217 @@
       color: var(--text-dim);
     }
 
-    /* Responsive adjustments */
-    @media (max-width: 968px) {
+    /* ===================== RESPONSIVE ===================== */
 
-      .hero-grid,
-      .credits-grid {
+    /* Tablet: ≤ 968px */
+    @media (max-width: 968px) {
+      .section {
+        padding: 3.5rem 0;
+      }
+
+      .section-title {
+        font-size: 1.85rem;
+      }
+
+      .section-desc {
+        font-size: 1rem;
+        margin-bottom: 2.5rem;
+      }
+
+      /* Nav: hide links on tablet and below, show only logo */
+      .nav-links {
+        display: none;
+      }
+
+      /* Hero */
+      .hero {
+        padding: 3rem 0 4rem;
+      }
+
+      .hero-grid {
         grid-template-columns: 1fr;
-        gap: 3rem;
+        gap: 2.5rem;
         text-align: center;
+      }
+
+      .hero-content h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero-content p {
+        font-size: 1.05rem;
       }
 
       .hero-actions {
         justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
       }
 
-      .components-grid {
-        grid-template-columns: repeat(2, 1fr);
+      .hero-qr-badge {
+        justify-content: center;
+        width: 100%;
       }
 
+      .hero-image-wrapper {
+        order: -1;
+      }
+
+      /* How It Works */
       .loop-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
       }
 
       .loop-arrow {
         display: none;
       }
+
+      /* Components */
+      .components-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+      }
+
+      /* Setup Steps */
+      .step-item {
+        gap: 1rem;
+      }
+
+      .step-item:not(:last-child)::after {
+        left: 20px;
+      }
+
+      .step-content {
+        padding: 1.5rem;
+      }
+
+      /* Credits */
+      .credits-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        text-align: center;
+      }
+
+      .credits-image {
+        display: flex;
+        justify-content: center;
+      }
+
+      .credits-image img {
+        max-width: 70%;
+      }
     }
 
-    @media (max-width: 576px) {
+    /* Large Mobile: ≤ 768px */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
+      }
+
+      .section {
+        padding: 3rem 0;
+      }
+
+      .section-title {
+        font-size: 1.65rem;
+      }
+
+      /* Hero */
+      .hero-content h1 {
+        font-size: 2rem;
+      }
+
+      /* Steps: stack vertically and simplify the connector line */
+      .step-item {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .step-item:not(:last-child)::after {
+        display: none;
+      }
+
+      .step-marker {
+        align-self: flex-start;
+      }
+
+      /* QR Badge: stack vertically */
+      .hero-qr-badge {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+        gap: 0.75rem;
+      }
+
+      .hero-qr-badge img {
+        width: 90px;
+        height: 90px;
+      }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    /* Small Mobile: ≤ 480px */
+    @media (max-width: 480px) {
+      .section {
+        padding: 2.5rem 0;
+      }
+
+      .section-title {
+        font-size: 1.45rem;
+      }
+
+      .section-desc {
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+      }
+
+      /* Hero */
+      .hero {
+        padding: 2rem 0 3rem;
+      }
+
+      .hero-content h1 {
+        font-size: 1.75rem;
+        line-height: 1.2;
+      }
+
+      .hero-content p {
+        font-size: 0.95rem;
+      }
+
+      /* How It Works: single column */
+      .loop-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* Components: single column */
       .components-grid {
         grid-template-columns: 1fr;
       }
 
-      .loop-grid {
-        grid-template-columns: 1fr;
+      /* Credits */
+      .credits-image img {
+        max-width: 90%;
+      }
+
+      .credits-content h3 {
+        font-size: 1.4rem;
+      }
+
+      /* Team member card */
+      .team-member {
+        flex-wrap: wrap;
+      }
+
+      /* Footer */
+      .footer {
+        padding: 2rem 0;
       }
     }
   </style>
