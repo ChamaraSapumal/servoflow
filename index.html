@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ServoFlow - Closed-Loop Smart Servo Control System</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+  <!-- CSS Styling -->
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-hover: #0f766e;
+      --primary-light: #f0fdfa;
+      --background: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 25px -5px rgba(13, 148, 136, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      --max-width: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Typography */
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      font-weight: 400;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Layout Containers */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .section {
+      padding: 5rem 0;
+    }
+
+    .section-title {
+      font-size: 2.25rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      color: var(--text);
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 50px;
+      height: 4px;
+      background-color: var(--primary);
+      margin: 0.75rem auto 0;
+      border-radius: 2px;
+    }
+
+    .section-desc {
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 3.5rem;
+      font-size: 1.125rem;
+      color: var(--text-dim);
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem 0;
+    }
+
+    .navbar .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 4rem 0 6rem;
+      background-color: #ffffff;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: center;
+      gap: 4rem;
+    }
+
+    .hero-content h1 {
+      font-size: 3.5rem;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    .hero-content h1 span {
+      color: var(--primary);
+    }
+
+    .hero-content p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: var(--text-muted);
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.75rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+      border: 1px solid var(--primary);
+      box-shadow: 0 4px 14px 0 rgba(13, 148, 136, 0.2);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    .hero-qr-badge {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      background-color: var(--primary-light);
+      border-radius: 0.75rem;
+      border: 1px dashed rgba(13, 148, 136, 0.3);
+    }
+
+    .hero-qr-badge img {
+      width: 70px;
+      height: 70px;
+    }
+
+    .hero-qr-text h4 {
+      font-size: 0.85rem;
+      color: var(--primary-hover);
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .hero-qr-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .hero-image-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .hero-image-wrapper img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 1rem;
+      /* box-shadow: var(--shadow-lg); */
+    }
+
+    /* How It Works (System Loop) */
+    .loop-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-top: 2rem;
+      position: relative;
+    }
+
+    .loop-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+
+    .loop-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(13, 148, 136, 0.2);
+    }
+
+    .loop-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: #ffffff;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      font-size: 1.1rem;
+      border: 4px solid var(--primary-light);
+    }
+
+    .loop-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+
+    .loop-card p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .loop-arrow {
+      position: absolute;
+      top: 50%;
+      right: -10%;
+      width: 20%;
+      height: 2px;
+      border-top: 2px dashed var(--border);
+      z-index: 1;
+      transform: translateY(-50%);
+    }
+
+    /* Components Section */
+    .components-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .component-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .component-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(13, 148, 136, 0.2);
+    }
+
+    .component-info {
+      padding: 1.5rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .component-tag {
+      display: inline-block;
+      align-self: flex-start;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 0.25rem;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .component-info h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .component-info p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Setup Timeline Steps */
+    .setup-layout {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .step-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 50px;
+      left: 20px;
+      bottom: -30px;
+      width: 2px;
+      background-color: var(--border);
+    }
+
+    .step-marker {
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background-color: var(--primary-light);
+      border: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .step-content {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 100%;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step-content h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+
+    .step-content ul {
+      margin-left: 1.25rem;
+      margin-top: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .step-content li {
+      margin-bottom: 0.25rem;
+    }
+
+    /* Credits / Team Section */
+    .credits-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .credits-image img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 1rem;
+      /* box-shadow: var(--shadow); */
+    }
+
+    .credits-content h3 {
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    .team-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .team-member {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+    }
+
+    .member-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      border: 2px solid var(--border);
+    }
+
+    .member-details h4 {
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .member-details p {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #ffffff;
+      border-top: 1px solid var(--border);
+      padding: 3rem 0;
+      text-align: center;
+    }
+
+    .footer p {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 968px) {
+
+      .hero-grid,
+      .credits-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        text-align: center;
+      }
+
+      .hero-actions {
+        justify-content: center;
+      }
+
+      .components-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .loop-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .loop-arrow {
+        display: none;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .components-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .loop-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container">
+      <a href="#" class="logo">SERVO<span>FLOW</span></a>
+      <ul class="nav-links">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#components">Components</a></li>
+        <li><a href="#setup">Setup</a></li>
+        <li><a href="#team">Team</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <h1>Closed-Loop <span>Smart Servo</span> Control System</h1>
+          <p>An advanced, high-precision position controller driven by an ESP32 microcontroller, utilizing real-time I2C
+            feedback from an AS5600 encoder to drive a geared DC motor.</p>
+          <div class="hero-actions">
+            <a href="https://github.com/ChamaraSapumal/servo-flow/releases/download/v1.0.0/app-release.apk"
+              class="btn btn-primary">Download Dashboard APK</a>
+            <div class="hero-qr-badge">
+              <img src="servo_flow_qr.png" alt="Download QR Code">
+              <div class="hero-qr-text">
+                <h4>Scan to Download</h4>
+                <p>Get Android App instantly</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-image-wrapper">
+          <img src="servo_flow_hero.png" alt="ServoFlow Mechanics Graphic">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works (System Loop) -->
+  <section id="how-it-works" class="section">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-desc">ServoFlow functions as a high-frequency feedback loop that reads sensor angles and adjusts
+        voltages instantly to stay locked on the target.</p>
+
+      <div class="loop-grid">
+        <div class="loop-card">
+          <div class="loop-num">1</div>
+          <h3>Setpoint Command</h3>
+          <p>The user selects a target angle (0-360°) via the React Native dashboard or the physical rotary encoder.</p>
+          <div class="loop-arrow"></div>
+        </div>
+
+        <div class="loop-card">
+          <div class="loop-num">2</div>
+          <h3>PID Processing</h3>
+          <p>The ESP32 runs a 100Hz PID loop, computing corrections based on error, deadband offset, and filtered
+            derivative speed.</p>
+          <div class="loop-arrow"></div>
+        </div>
+
+        <div class="loop-card">
+          <div class="loop-num">3</div>
+          <h3>Motor Actuation</h3>
+          <p>The HW-095 (L298N) H-bridge driver receives PWM signals and outputs drive current to actuate the TT DC
+            motor.</p>
+          <div class="loop-arrow"></div>
+        </div>
+
+        <div class="loop-card">
+          <div class="loop-num">4</div>
+          <h3>Encoder Feedback</h3>
+          <p>The AS5600 absolute magnetic encoder reads the output shaft's physical angle at 12-bit resolution and feeds
+            it back via I2C.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Components Section -->
+  <section id="components" class="section"
+    style="background-color: #ffffff; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <div class="container">
+      <h2 class="section-title">Hardware Components</h2>
+      <p class="section-desc">The core hardware components configured inside the ServoFlow smart actuator loop.</p>
+
+      <div class="components-grid">
+        <div class="component-card">
+          <div class="component-info">
+            <span class="component-tag">Controller</span>
+            <h3>ESP32 NodeMCU</h3>
+            <p>Executes the 100Hz PID calculations, processes encoder interrupts, displays menus, and runs the WebSocket
+              telemetry server.</p>
+          </div>
+        </div>
+
+        <div class="component-card">
+          <div class="component-info">
+            <span class="component-tag">Feedback Sensor</span>
+            <h3>AS5600 Magnetic Encoder</h3>
+            <p>Provides 12-bit absolute angle measurement (4096 positions) via I2C. Avoids mechanical wear and wear-out
+              over time.</p>
+          </div>
+        </div>
+
+        <div class="component-card">
+          <div class="component-info">
+            <span class="component-tag">Actuation Driver</span>
+            <h3>HW-095 L298N Driver</h3>
+            <p>A dual-channel H-Bridge motor driver that translates logic level PWM direction commands into high-power
+              motor drive current.</p>
+          </div>
+        </div>
+
+        <div class="component-card">
+          <div class="component-info">
+            <span class="component-tag">Actuator</span>
+            <h3>TT Geared DC Motor</h3>
+            <p>Provides robust torque and rotation. Controlled via deadband-compensated proportional-integral-derivative
+              inputs.</p>
+          </div>
+        </div>
+
+        <div class="component-card">
+          <div class="component-info">
+            <span class="component-tag">Display</span>
+            <h3>0.96" SSD1306 OLED</h3>
+            <p>Displays real-time actual angles, active connection indicators, current PID values, and diagnostic
+              warnings.</p>
+          </div>
+        </div>
+
+        <div class="component-card">
+          <div class="component-info">
+            <span class="component-tag">Physical Input</span>
+            <h3>KY-040 Rotary Encoder</h3>
+            <p>Enables local menu navigation, digit-by-digit tuning, target angle adjustment, and calibration commands.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Setup Timeline Steps -->
+  <section id="setup" class="section">
+    <div class="container">
+      <h2 class="section-title">Setup Instructions</h2>
+      <p class="section-desc">Follow these structured steps to flash the firmware, run the dashboard, and configure the
+        system.</p>
+
+      <div class="setup-layout">
+        <div class="step-item">
+          <div class="step-marker">1</div>
+          <div class="step-content">
+            <h3>Hardware Wiring</h3>
+            <p>Wire the components according to the pinout mapping:</p>
+            <ul>
+              <li>Encoder / Display: SDA to Pin 21, SCL to Pin 22 (shared I2C bus).</li>
+              <li>Motor: IN1 to Pin 25, IN2 to Pin 26 (PWM driving).</li>
+              <li>Rotary Encoder: CLK to Pin 18, DT to Pin 19, SW to Pin 5.</li>
+              <li>Bridge all Ground connections (ESP32 and Motor Battery pack).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-marker">2</div>
+          <div class="step-content">
+            <h3>Flash Firmware</h3>
+            <p>Upload the firmware to your ESP32:</p>
+            <ul>
+              <li>Open <code>ESP32/ServoFlow/ServoFlow.ino</code> in the Arduino IDE.</li>
+              <li>Install dependencies: <strong>AS5600</strong>, <strong>Adafruit SSD1306</strong>,
+                <strong>WebSockets</strong>, and <strong>ArduinoJson</strong>.</li>
+              <li>Configure board to <strong>ESP32 Dev Module</strong> and click upload.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-marker">3</div>
+          <div class="step-content">
+            <h3>Deploy App Dashboard</h3>
+            <p>Run the mobile monitoring client:</p>
+            <ul>
+              <li>Run <code>npm install</code> in the root directory.</li>
+              <li>Run <code>npm run dev</code> to boot up the Expo server.</li>
+              <li>Connect your phone to the ESP32 hot-spot WiFi: <strong>SSID: ServoFlow</strong>, <strong>Pass:
+                  sapumal2003</strong>.</li>
+              <li>Launch Expo Go and view live telemetry!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Credits / Team Section -->
+  <section id="team" class="section" style="background-color: #ffffff; border-top: 1px solid var(--border);">
+    <div class="container">
+      <h2 class="section-title">Project Credits</h2>
+      <p class="section-desc">Developed and tested by our dedicated engineering team.</p>
+
+      <div class="credits-grid">
+        <div class="credits-image">
+          <img src="team_working.png" alt="Team Working Illustration">
+        </div>
+        <div class="credits-content">
+          <h3>Meet the Team</h3>
+          <p style="margin-bottom: 2rem;">ServoFlow is a collaborative project created to implement closed-loop motor
+            positioning. Below are the key contributors responsible for design, firmware, and software engineering.</p>
+
+          <div class="team-list">
+            <div class="team-member">
+              <div class="member-avatar">CS</div>
+              <div class="member-details">
+                <h4>Chamara Sapumal</h4>
+                <p>Lead Hardware & Software Engineer</p>
+              </div>
+            </div>
+
+            <div class="team-member">
+              <div class="member-avatar">TM</div>
+              <div class="member-details">
+                <h4>Thushara Madushan</h4>
+                <p>Control Systems & Telemetry Integration</p>
+              </div>
+            </div>
+
+            <div class="team-member">
+              <div class="member-avatar">TM</div>
+              <div class="member-details">
+                <h4>Chamoda Dilshan</h4>
+                <p>Mechanical Assembly & Frame design</p>
+              </div>
+            </div>
+            <div class="team-member">
+              <div class="member-avatar">TM</div>
+              <div class="member-details">
+                <h4>Heshan Malshika</h4>
+                <p>Mechanical Assembly & Frame design</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 ServoFlow Project. Open-Source under MIT License.</p>
+    </div>
+  </footer>
+
+</body>
+
+</html>
